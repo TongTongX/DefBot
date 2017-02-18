@@ -13,6 +13,8 @@ ScoutManager::ScoutManager()
     , _gasStealFinished(false)
     , _currentRegionVertexIndex(-1)
     , _previousScoutHP(0)
+	, _tankScout(nullptr)
+	, _numTankScouts(0)
 {
 }
 
@@ -20,6 +22,34 @@ ScoutManager & ScoutManager::Instance()
 {
 	static ScoutManager instance;
 	return instance;
+}
+
+void ScoutManager::setTankScout(BWAPI::Unit unit)
+{
+	// what to do with pre-existing tankScout
+	if (_tankScout) {
+		Instance().finishedWithTankScout(_tankScout);
+	}
+
+	// set unit to tankScout
+	_tankScout = unit;
+}
+
+void ScoutManager::tankScouting()
+{
+	if (!_tankScout) {
+		return;
+	}
+	
+	// in order to scout for a tank, we must have a tank
+
+}
+
+void ScoutManager::finishedWithTankScout(BWAPI::Unit unit) 
+{
+	UAB_ASSERT(unit != nullptr, "Unit was null");
+
+	// What do we do with Vultures if we aren't scouting?
 }
 
 void ScoutManager::update()

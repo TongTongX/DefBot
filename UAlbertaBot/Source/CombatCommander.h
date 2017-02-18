@@ -12,11 +12,28 @@ class CombatCommander
 {
 	SquadData       _squadData;
     BWAPI::Unitset  _combatUnits;
+	BWAPI::Unitset	_attackUnits;
     bool            _initialized;
+	bool			_tanksReady;
+	bool			_vulturesReady;
+	bool			_scvsReady;
+	bool			_airAttackReady;
+	bool			_vesselsReady;
+	bool			_tankDef;
+	bool			_vultureDef;
+	bool			_airDef;
+	size_t			_attackMult;
+	bool			_chokeDefense;
 
     void            updateScoutDefenseSquad();
 	void            updateDefenseSquads();
 	void            updateAttackSquads();
+	void			updateAttackUnits();
+	void			updateTankSquads();
+	void			updateVultureSquads();
+	void			updateSCVSquads();
+	void			updateAirAttackSquads();
+	void			updateVesselSquads();
     void            updateDropSquads();
 	void            updateIdleSquad();
 	bool            isSquadUpdateFrame();
@@ -24,6 +41,7 @@ class CombatCommander
 
 	BWAPI::Unit     findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender);
     BWAPI::Unit     findClosestWorkerToTarget(BWAPI::Unitset & unitsToAssign, BWAPI::Unit target);
+	BWAPI::Unit		findStandbyDefender(const Squad & defenseSquad, BWAPI::Position pos, BWAPI::UnitType type);
 
 	BWAPI::Position getDefendLocation();
     BWAPI::Position getMainAttackLocation();
@@ -35,6 +53,8 @@ class CombatCommander
     int             getNumGroundDefendersInSquad(Squad & squad);
     int             getNumAirDefendersInSquad(Squad & squad);
 
+	void			updateStandbyDefenseUnits(Squad & defenseSquad, const size_t & tankNeeded, const size_t & vultureNeeded,
+		const size_t & airAttackersNeeded, const size_t & vesselsNeeded, const size_t & numBases, const size_t & unitsAvailable);
     void            updateDefenseSquadUnits(Squad & defenseSquad, const size_t & flyingDefendersNeeded, const size_t & groundDefendersNeeded);
     int             defendWithWorkers();
 

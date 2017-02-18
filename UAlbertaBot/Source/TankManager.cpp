@@ -19,7 +19,7 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
     int siegeTankRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange() - 32;
     bool haveSiege = BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode);
 
-
+	
 
 	// for each zealot
 	for (auto & tank : tanks)
@@ -38,30 +38,43 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
         }
 
 		// if the order is to attack or defend
-		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
-        {
+		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend)
+		{
 			// if there are targets
 			if (!tankTargets.empty())
 			{
 				// find the best target for this zealot
 				BWAPI::Unit target = getTarget(tank, tankTargets);
 
-                if (target && Config::Debug::DrawUnitTargetInfo) 
-	            {
-		            BWAPI::Broodwar->drawLineMap(tank->getPosition(), tank->getTargetPosition(), BWAPI::Colors::Purple);
-	            }
+				if (target && Config::Debug::DrawUnitTargetInfo)
+				{
+					BWAPI::Broodwar->drawLineMap(tank->getPosition(), tank->getTargetPosition(), BWAPI::Colors::Purple);
+				}
 
-                // if we are within siege range, siege up
-                if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint)
-                {
-                    tank->siege();
-                }
-                // otherwise unsiege and move in
-                else if ((!target || tank->getDistance(target) > siegeTankRange) && tank->canUnsiege())
-                {
-                    tank->unsiege();
-                }
+				// if we are within siege range, siege up
+				if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint)
+				{
+					tank->siege();
+				}
 
+				// otherwise unsiege and move in
+				else if ((!target || tank->getDistance(target) > siegeTankRange) && tank->canUnsiege())
+				{
+				    tank->unsiege();
+				}
+
+				// otherwise perform turtling
+				//else if ((!target || tank->getDistance(target) > siegeTankRange) && tank->canUnsiege())
+				//{
+					// if there are no other siege tanks in range, perform as normal
+					//if (!tank->getClosestUnit(tanks)) {
+						//tank->unsiege();
+					//}
+					// if there are siege tanks nearby, use turtle formation
+					//else {
+						//tank->unsiege();
+					//}
+				//}
 
                 // if we're in siege mode just attack the target
                 if (tank->isSieged())

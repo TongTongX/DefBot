@@ -74,6 +74,10 @@ void UAlbertaBotModule::onEnd(bool isWinner)
 
 void UAlbertaBotModule::onFrame()
 {
+	// test compilation
+	//int test = 4;
+	//BWAPI::Broodwar->printf("%d", test);
+
     char red = '\x08';
     char green = '\x07';
     char white = '\x04';

@@ -71,7 +71,8 @@ const bool StrategyManager::shouldExpandNow() const
     }
 
     // we will make expansion N after array[N] minutes have passed
-    std::vector<int> expansionTimes = {5, 10, 20, 30, 40 , 50};
+	//std::vector<int> expansionTimes = {5, 10, 20, 30, 40, 50};   - original timings
+	std::vector<int> expansionTimes = { 3, 8, 15, 24, 35, 48, 63, 80 };
 
     for (size_t i(0); i < expansionTimes.size(); ++i)
     {
@@ -97,7 +98,7 @@ const MetaPairVector StrategyManager::getBuildOrderGoal()
     {
         return getProtossBuildOrderGoal();
     }
-    else if (myRace == BWAPI::Races::Terran)
+	else if (myRace == BWAPI::Races::Terran)
 	{
 		return getTerranBuildOrderGoal();
 	}
@@ -207,11 +208,13 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
     int numMarines      = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Marine);
 	int numMedics       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Medic);
 	int numWraith       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Wraith);
+	int numBC			= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Battlecruiser);
     int numVultures     = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Vulture);
     int numGoliath      = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Goliath);
     int numTanks        = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode)
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode);
     int numBay          = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay);
+	int numTurrets		= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret);
 
     if (Config::Strategy::StrategyName == "Terran_MarineRush")
     {
@@ -238,22 +241,75 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
     }
     else if (Config::Strategy::StrategyName == "Terran_TankPush")
     {
-        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 6));
-        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 6));
-        goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 6));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 6));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
     }
-    else
-    {
-        BWAPI::Broodwar->printf("Warning: No build order goal for Terran Strategy: %s", Config::Strategy::StrategyName.c_str());
-    }
+	else if (Config::Strategy::StrategyName == "Terran_DefBot")
+	{
+		BWAPI::Race theirRace = BWAPI::Broodwar->enemy()->getRace();
+
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, numVultures + 4));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 1));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
+
+		if (numVultures >= 4)
+		{
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 10));
+		}
+
+		if (numCC >= 2)
+		{
+			if (theirRace == BWAPI::Races::Zerg)
+			{
+				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 6));
+				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Science_Vessel, 1));
+			}
+			else
+			{
+				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 3));
+			}
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Missile_Turret, 5));
+		}
+
+		if (numCC >= 3)
+		{
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 1));
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 1));
+		}
+
+		if (numCC >= 4)
+		{
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Battlecruiser, numBC + 10));
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Ship_Weapons, 1));
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Ship_Plating, 1));
+		}
+
+		if (InformationManager::Instance().enemyHasCloakedUnits())
+		{
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Science_Vessel, 1));
+			if (numTurrets < 5)
+			{
+				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Missile_Turret, 3));
+			}
+		}
+	}
+	else
+	{
+		BWAPI::Broodwar->printf("Warning: No build order goal for Terran Strategy: %s", Config::Strategy::StrategyName.c_str());
+	}
 
 
 
-    if (shouldExpandNow())
-    {
-        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Command_Center, numCC + 1));
-        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_SCV, numWorkers + 10));
-    }
+	if (shouldExpandNow())
+	{
+		// Creates 15 workers when we expand. Ensure we never have >~60 workers. 
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Command_Center, numCC + 1));
+		if (numWorkers <= 50)
+		{
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_SCV, numWorkers + 15));
+		}
+	}
 
 	return goal;
 }

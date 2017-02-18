@@ -2,6 +2,7 @@
 #include "BuildingManager.h"
 #include "Micro.h"
 #include "ScoutManager.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
@@ -14,8 +15,10 @@ BuildingManager::BuildingManager()
 }
 
 // gets called every frame from GameCommander
-void BuildingManager::update()
+void BuildingManager::update(const BWAPI::Unitset & combatUnits)
 {
+	_combatUnits = combatUnits;
+
     validateWorkersAndBuildings();          // check to see if assigned workers have died en route or while constructing
     assignWorkersToUnassignedBuildings();   // assign workers to the unassigned buildings and label them 'planned'    
     constructAssignedBuildings();           // for each planned building, if the worker isn't constructing, send the command    
@@ -68,6 +71,23 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
     // for each building that doesn't have a builder, assign one
     for (Building & b : _buildings)
     {
+		
+		// Assign Marines to bunker, where they will remain for the duration of the game
+		if (b.type == BWAPI::UnitTypes::Terran_Bunker) {
+			if (UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Marine) > 0)
+			{
+				for (auto & unit : _combatUnits) 
+				{
+					if (unit->getType() == (BWAPI::UnitTypes::Terran_Marine))
+					{
+						unit->rightClick(b.position);
+						break;
+					}
+				}
+			}
+		}
+		
+
         if (b.status != BuildingStatus::Unassigned)
         {
             continue;
@@ -85,6 +105,8 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
             // TODO: special case of terran building whose worker died mid construction
             //       send the right click command to the buildingUnit to resume construction
             //		 skip the buildingsAssigned step and push it back into buildingsUnderConstruction
+
+
 
             b.builderUnit = workerToAssign;
 
@@ -220,8 +242,30 @@ void BuildingManager::checkForStartedConstruction()
     }
 }
 
-// STEP 5: IF WE ARE TERRAN, THIS MATTERS, SO: LOL
-void BuildingManager::checkForDeadTerranBuilders() {}
+// STEP 5: NOT YET FUNCTIONAL
+void BuildingManager::checkForDeadTerranBuilders() 
+{
+	/*
+	for (auto & b : _buildings)
+	{
+		if (b.status == BuildingStatus::UnderConstruction && (b.buildingUnit == nullptr || !b.buildingUnit->getType().isBuilding() || b.buildingUnit->getHitPoints() <= 0))
+		{
+			BWAPI::Unit workerToAssign = WorkerManager::Instance().getBuilder(b);
+
+			if (workerToAssign)
+			{
+				b.buildingUnit = workerToAssign;
+				b.buildingUnit->build(b.type, b.finalPosition);
+				b.buildCommandGiven = true;
+
+				// or
+
+				workerToAssign->rightClick(b.position);
+			}
+		}
+	}
+	*/
+}
 
 // STEP 6: CHECK FOR COMPLETED BUILDINGS
 void BuildingManager::checkForCompletedBuildings()

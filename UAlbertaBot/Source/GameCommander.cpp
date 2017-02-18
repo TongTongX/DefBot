@@ -44,7 +44,7 @@ void GameCommander::update()
 	_timerManager.stopTimer(TimerManager::Production);
 
 	_timerManager.startTimer(TimerManager::Building);
-	BuildingManager::Instance().update();
+	BuildingManager::Instance().update(_combatUnits);
 	_timerManager.stopTimer(TimerManager::Building);
 
 	// combat and scouting managers

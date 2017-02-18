@@ -200,8 +200,14 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
     SparCraft::Timer t;
     t.start();
 
-    // get the precomputed vector of tile positions which are sorted closes to this location
+    // get the precomputed vector of tile positions which are sorted closest to this location
     const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(BWAPI::Position(b.desiredPosition));
+
+	/*
+	BWTA::Chokepoint *choke = BWTA::getNearestChokepoint(BWAPI::Position(b.position));
+	BWAPI::Position pos1 = choke->getCenter();
+	const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(pos1);
+	*/
 
     double ms1 = t.getElapsedTimeInMilliSec();
 

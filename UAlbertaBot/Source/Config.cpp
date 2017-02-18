@@ -7,8 +7,20 @@ namespace Config
     {
         bool ConfigFileFound                = false;
         bool ConfigFileParsed               = false;
-        std::string ConfigFileLocation      = "bwapi-data/AI/UAlbertaBot_Config.txt";
-    }
+		/*
+			Edit the onStart() function in UAlbertaBotModule.cpp so that the call to parseConfigFile() points 
+			to where the UAlbertaBot configuration file exists on your machine. If you do not point to the 
+			correct location, UAlbertaBot's default settings will be used and an error message will print on game start.
+			std::string ConfigFileLocation      = "bwapi-data/AI/UAlbertaBot_Config.txt";	// old ConfigFileLocation
+			Notes:
+				1. For path of a file, use \\ instead of \ on windows
+				2. The path can be different for each team member. Make sure it is correct before compiling.
+		*/
+		std::string ConfigFileLocation = "bwapi-data/AI/UAlbertaBot_Config.txt";
+		// "C:\\Users\\cjvenhuis\\Documents\\GitHub\\DefBot\\UAlbertaBot\\UAlbertaBot_Config.txt";  // Colleen's path
+		// "E:\\ualbertabot\\UAlbertaBot\\UAlbertaBot_Config.txt";									// Ryan's path
+		// "C:\\Users\\TongTong\\Documents\\DefBot\\UAlbertaBot\\UAlbertaBot_Config.txt";			// Alan's path
+	}
 
     namespace Strategy
     {

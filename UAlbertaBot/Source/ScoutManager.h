@@ -18,6 +18,8 @@ class ScoutManager
     int                             _currentRegionVertexIndex;
     int                             _previousScoutHP;
 	std::vector<BWAPI::Position>    _enemyRegionVertices;
+	BWAPI::Unit						_tankScout;
+	int								_numTankScouts;
 
 	bool                            enemyWorkerInRadius();
     bool			                immediateThreat();
@@ -30,7 +32,7 @@ class ScoutManager
 	void                            moveScouts();
     void                            drawScoutInformation(int x, int y);
     void                            calculateEnemyRegionVertices();
-
+	void							tankScouting();
 	ScoutManager();
 
 public:
@@ -40,6 +42,8 @@ public:
 	void update();
 
     void setWorkerScout(BWAPI::Unit unit);
+	void setTankScout(BWAPI::Unit unit);
+	void finishedWithTankScout(BWAPI::Unit unit);
 
 	void onSendText(std::string text);
 	void onUnitShow(BWAPI::Unit unit);

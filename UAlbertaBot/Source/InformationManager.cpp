@@ -500,10 +500,11 @@ bool InformationManager::isCombatUnit(BWAPI::UnitType type) const
 	}
 
 	// check for various types of combat units
-	if (type.canAttack() || 
-		type == BWAPI::UnitTypes::Terran_Medic || 
+	if (type.canAttack() ||
+		type == BWAPI::UnitTypes::Terran_Medic ||
 		type == BWAPI::UnitTypes::Protoss_Observer ||
-        type == BWAPI::UnitTypes::Terran_Bunker)
+		type == BWAPI::UnitTypes::Terran_Bunker ||
+		type == BWAPI::UnitTypes::Terran_Science_Vessel)
 	{
 		return true;
 	}

@@ -17,6 +17,7 @@ class BuildingManager
     bool            _debugMode;
     int             _reservedMinerals;				// minerals reserved for planned buildings
     int             _reservedGas;					// gas reserved for planned buildings
+	BWAPI::Unitset	_combatUnits;
 
     bool            isEvolvedBuilding(BWAPI::UnitType type);
     bool            isBuildingPositionExplored(const Building & b) const;
@@ -36,7 +37,7 @@ public:
     
     static BuildingManager &	Instance();
 
-    void                update();
+	void                update(const BWAPI::Unitset & combatUnits);
     void                onUnitMorph(BWAPI::Unit unit);
     void                onUnitDestroy(BWAPI::Unit unit);
     void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation,bool isGasSteal);

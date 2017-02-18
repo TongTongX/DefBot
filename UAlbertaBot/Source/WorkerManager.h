@@ -34,26 +34,44 @@ public:
     void        finishedWithWorker(BWAPI::Unit unit);
 
     void        finishedWithCombatWorkers();
+    void        finishedWithRepairWorker(BWAPI::Unit unit);
+    void        finishedWithRepairCombatWorker(BWAPI::Unit unit);
+
 
     void        drawResourceDebugInfo();
     void        updateWorkerStatus();
     void        drawWorkerInformation(int x,int y);
 
+    // all possible cases for number of workers, for further uses
     int         getNumMineralWorkers();
     int         getNumGasWorkers();
     int         getNumIdleWorkers();
+    int getNumWorkers();
+    int getNumBuildWorkers();
+    int getNumCombatWorkers();
+    int getNumRepairWorkers();
+    int getNumMoveWorkers();
+    int getNumScoutWorkers();
+    int getNumDefaultWorkers();
+    // =========================================================
+
+    // temporary part of the evaluation function
+    int getNumCloseEnemyUnit(BWAPI::Unit worker);
+
     void        setScoutWorker(BWAPI::Unit worker);
 
     bool        isWorkerScout(BWAPI::Unit worker);
     bool        isFree(BWAPI::Unit worker);
     bool        isBuilder(BWAPI::Unit worker);
+    bool        isWorkerCombat(BWAPI::Unit worker);
 
     BWAPI::Unit getBuilder(Building & b,bool setJobAsBuilder = true);
     BWAPI::Unit getMoveWorker(BWAPI::Position p);
     BWAPI::Unit getClosestDepot(BWAPI::Unit worker);
     BWAPI::Unit getGasWorker(BWAPI::Unit refinery);
     BWAPI::Unit getClosestEnemyUnit(BWAPI::Unit worker);
-    BWAPI::Unit getClosestMineralWorkerTo(BWAPI::Unit enemyUnit);
+    BWAPI::Unit getClosestMineralWorkerTo(BWAPI::Unit targetUnit);
+    BWAPI::Unit getClosestCombatWorkerTo(BWAPI::Unit targetUnit);
     BWAPI::Unit getWorkerScout();
 
     void        setBuildingWorker(BWAPI::Unit worker,Building & b);

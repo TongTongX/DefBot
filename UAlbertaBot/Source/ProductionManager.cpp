@@ -66,6 +66,11 @@ void ProductionManager::update()
         {
 		    BWAPI::Broodwar->printf("Supply deadlock detected, building supply!");
         }
+		// if we have an abundance of resources, create multiple supply providers to facilitate faster unit production
+		if (BWAPI::Broodwar->self()->minerals() > 400)
+		{
+			_queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
+		}
 		_queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
 	}
 
@@ -87,7 +92,7 @@ void ProductionManager::update()
         }
         else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
         {
-            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret) < 2)
+            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret) < 5)
 		    {
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
@@ -97,6 +102,11 @@ void ProductionManager::update()
 		    {
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay), true);
 		    }
+
+			if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Science_Vessel) == 0)
+			{
+				_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Science_Vessel), true);
+			}
         }
         
         if (Config::Debug::DrawBuildOrderSearchInfo)

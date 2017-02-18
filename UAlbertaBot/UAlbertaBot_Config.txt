@@ -8,7 +8,7 @@
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"             : 5,
+        "SetLocalSpeed"             : 0,
         "SetFrameSkip"              : 0,
         "UserInput"                 : true,
         "CompleteMapInformation"    : false
@@ -41,8 +41,8 @@
         "LogAssertToErrorFile"      : false,
         
         "DrawGameInfo"              : false,   
-        "DrawUnitHealthBars"        : true,
-        "DrawProductionInfo"        : true, 
+        "DrawUnitHealthBars"        : false,
+        "DrawProductionInfo"        : false, 
         "DrawBuildOrderSearchInfo"  : false,
         "DrawScoutInfo"             : false,
         "DrawEnemyUnitInfo"         : false,
@@ -79,7 +79,7 @@
     "Strategy" :
     {
         "Protoss"                   : "Protoss_ZealotRush",
-        "Terran"                    : "Terran_MarineRush",
+        "Terran"                    : "Terran_DefBot",
         "Zerg"                      : "Zerg_ZerglingRush",
         
         "ScoutGasSteal"             : false,
@@ -106,6 +106,7 @@
             "Terran_TankPush"       : { "Race" : "Terran",  "OpeningBuildOrder" : ["SCV", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Factory", "Factory", "SCV", "SCV", "SCV", "SCV", "Machine Shop", "Machine Shop", "Supply Depot", "Tank Siege Mode", "Siege Tank Tank Mode", "Siege Tank Tank Mode", "Siege Tank Tank Mode", "Siege Tank Tank Mode"]},
             "Terran_4RaxMarines"    : { "Race" : "Terran",  "OpeningBuildOrder" : ["Barracks", "SCV", "SCV", "Marine", "SCV", "Marine", "Supply Depot", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine"]},
             "Terran_VultureRush"    : { "Race" : "Terran",  "OpeningBuildOrder" : ["SCV", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "SCV", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "Factory", "SCV", "SCV", "SCV", "Vulture", "Vulture"]},
+            "Terran_DefBot"         : { "Race" : "Terran",  "OpeningBuildOrder" : ["SCV", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Factory", "Marine", "SCV", "Supply Depot", "Marine", "SCV", "Vulture", "Factory", "Supply Depot", "SCV", "Vulture", "Machine Shop", "Vulture", "Vulture", "SCV", "Supply Depot", "Siege Tank Tank Mode", "Tank Siege Mode", "Vulture", "SCV", "Vulture", "Siege Tank Tank Mode"]},
             "Zerg_ZerglingRush"     : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Spawning Pool", "Zergling", "Zergling", "Zergling", "Zergling"] },
             "Zerg_9Pool"            : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Drone", "Spawning Pool", "Drone", "Extractor", "Overlord", "Drone", "Zergling", "Zergling", "Zergling", "Hydralisk Den", "Drone", "Drone", "Drone", "Drone"] },
             "Zerg_2HatchHydra"      : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Hatchery", "Spawning Pool", "Drone", "Extractor", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Hydralisk Den", "Drone", "Overlord", "Drone", "Drone", "Drone", "Grooved_Spines", "Hydralisk","Hydralisk","Hydralisk","Hydralisk", "Hydralisk","Hydralisk","Hydralisk","Hydralisk", "Hydralisk","Hydralisk","Hydralisk","Hydralisk", "Hatchery", "Extractor" ] },

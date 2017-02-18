@@ -24,6 +24,11 @@ struct GroundThreat
 class MicroManager
 {
 	BWAPI::Unitset  _units;
+	BWAPI::Unitset  _attackUnits;
+	//BWAPI::Unitset  _;
+	//BWAPI::Unitset  _;
+	//BWAPI::Unitset  _;
+	//BWAPI::Unitset  _;
 
 protected:
 	

@@ -38,6 +38,9 @@ void MicroManager::execute(const SquadOrder & inputOrder)
 		return;
 	}
 
+	// create Unitsets to handle groups of units rather than individual units
+	
+
 	order = inputOrder;
 	drawOrderText();
 
@@ -64,6 +67,8 @@ void MicroManager::execute(const SquadOrder & inputOrder)
 	// the following block of code attacks all units on the way to the order position
 	// we want to do this if the order is attack, defend, or harass
 	if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
+
+		// change this if condition? Create Unitsets.
 	{
         // if this is a worker defense force
         if (_units.size() == 1 && (*_units.begin())->getType().isWorker())

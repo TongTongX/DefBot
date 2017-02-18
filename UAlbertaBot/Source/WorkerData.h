@@ -65,10 +65,19 @@ public:
 	void					setWorkerJob(BWAPI::Unit unit, WorkerJob job, WorkerMoveData wmd);
 	void					setWorkerJob(BWAPI::Unit unit, WorkerJob job, BWAPI::UnitType jobUnitType);
 
-	int						getNumWorkers() const;
+	
+	// all possible cases for number of worker, for further uses
 	int						getNumMineralWorkers() const;
 	int						getNumGasWorkers() const;
 	int						getNumIdleWorkers() const;
+	int getNumWorkers() const;
+	int	getNumBuildWorkers() const;
+	int	getNumCombatWorkers() const;
+	int	getNumRepairWorkers() const;
+	int	getNumMoveWorkers() const;
+	int	getNumScoutWorkers() const;
+	int	getNumDefaultWorkers() const;
+	// =========================================================
 	char					getJobCode(BWAPI::Unit unit);
 
 	void					getMineralWorkers(std::set<BWAPI::Unit> & mw);

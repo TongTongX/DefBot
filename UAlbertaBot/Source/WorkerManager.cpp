@@ -141,28 +141,39 @@ void WorkerManager::handleIdleWorkers()
 
 void WorkerManager::handleRepairWorkers()
 {
-    if (BWAPI::Broodwar->self()->getRace() != BWAPI::Races::Terran)
-    {
-        return;
-    }
+	if (BWAPI::Broodwar->self()->getRace() != BWAPI::Races::Terran)
+	{
+		return;
+	}
 
-    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
-    {
-        if (unit->getType().isBuilding() && (unit->getHitPoints() < unit->getType().maxHitPoints()))
-        {
-            BWAPI::Unit repairWorker = getClosestMineralWorkerTo(unit);
-            setRepairWorker(repairWorker, unit);
-            break;
-        }
-    }
+	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	{
+		// closest mineral worker repair buildings
+		if (unit->getType().isBuilding() && (unit->getHitPoints() < unit->getType().maxHitPoints()))
+		{
+			BWAPI::Unit repairWorker = getClosestMineralWorkerTo(unit);
+			setRepairWorker(repairWorker, unit);
+			break;
+		}
+		// closest combat worker repair Siege Tanks -- do this in CombatCommander
+		// if ((unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode
+		// 	|| unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode)
+		// 	&& (unit->getHitPoints() < unit->getType().maxHitPoints()))
+		// {
+		// 	BWAPI::Unit repairWorker = getClosestCombatWorkerTo(unit);
+		// 	setRepairWorker(repairWorker, unit);
+		// 	break;
+		// }
+	}
 }
 
 // bad micro for combat workers
 void WorkerManager::handleCombatWorkers()
 {
+	// =========================================old approach==========================================
 	for (auto & worker : workerData.getWorkers())
 	{
-        UAB_ASSERT(worker != nullptr, "Worker was null");
+		UAB_ASSERT(worker != nullptr, "Worker was null");
 
 		if (workerData.getWorkerJob(worker) == WorkerData::Combat)
 		{
@@ -175,6 +186,83 @@ void WorkerManager::handleCombatWorkers()
 			}
 		}
 	}
+
+	// /*
+	// 	Evaluation function for the current scenario
+	// 	For now just compare the number of combat works with the number of close enemy units
+	// 	- if the former value is way greater than the latter value, which means that DefBot has many extra
+	// 	combat workers, in this case, if every single enemy unit is already under attack, it is not necessary
+	// 	to set more combat worker to attack them, finishedWithCombatWorkers take care of the extra ones
+	// 	- if DefBot does not has this type of advantage, use the original micro, i.e., set all combat
+	// 	workers to attack closest enemy units
+	// */
+	// int numCombatWorkers = getNumCombatWorkers();
+	// // TODO find a better way to implement the evaluation function
+	// // TODO option 1, calculate numCloseEnemyUnit for several random combat workers, take the average
+	// // TODO option 2, re-calculate it as the game runs
+	// // TODO option 3, add a weight for different enemy units
+	// int numCloseEnemyUnit;
+	// for (auto & worker : workerData.getWorkers())
+	// {
+	// 	UAB_ASSERT(worker != nullptr, "Worker was null");
+
+	// 	if (workerData.getWorkerJob(worker) == WorkerData::Combat)
+	// 	{
+	// 		numCloseEnemyUnit = getNumCloseEnemyUnit(worker);
+	// 		break;
+	// 	}
+	// }
+
+
+	// for (auto & worker : workerData.getWorkers())
+	// {
+	// 	UAB_ASSERT(worker != nullptr, "Worker was null");
+
+	// 	if (workerData.getWorkerJob(worker) == WorkerData::Combat)
+	// 	{
+	// 		BWAPI::Broodwar->drawCircleMap(worker->getPosition().x, worker->getPosition().y, 4, BWAPI::Colors::Yellow, true);
+	// 		BWAPI::Unit target = getClosestEnemyUnit(worker);
+
+	// 		if (target)
+	// 		{
+	// 			if (target->isUnderAttack() && (double)numCombatWorkers > (double)numCloseEnemyUnit * 1.5)
+	// 			{
+	// 				continue;
+	// 			}
+	// 			// if (target->isTargetable())
+	// 			// {
+	// 				Micro::SmartAttackUnit(worker, target);
+	// 			// }
+	// 		}
+	// 	}
+	// }
+	
+}
+
+/*
+	temporary part of the evaluation function, implemented based on getClosestEnemyUnit
+	probably needs optimization
+*/
+int WorkerManager::getNumCloseEnemyUnit(BWAPI::Unit worker)
+{
+	UAB_ASSERT(worker != nullptr, "Worker was null");
+
+	int count = 0;
+
+	BWAPI::Unit closestUnit = nullptr;
+	double closestDist = 10000;
+
+	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+	{
+		double dist = unit->getDistance(worker);
+
+		if ((dist < 400) && (!closestUnit || (dist < closestDist)))
+		{
+			count++;
+		}
+	}
+
+	return count;
 }
 
 BWAPI::Unit WorkerManager::getClosestEnemyUnit(BWAPI::Unit worker)
@@ -202,7 +290,7 @@ void WorkerManager::finishedWithCombatWorkers()
 {
 	for (auto & worker : workerData.getWorkers())
 	{
-        UAB_ASSERT(worker != nullptr, "Worker was null");
+		UAB_ASSERT(worker != nullptr, "Worker was null");
 
 		if (workerData.getWorkerJob(worker) == WorkerData::Combat)
 		{
@@ -211,9 +299,32 @@ void WorkerManager::finishedWithCombatWorkers()
 	}
 }
 
-BWAPI::Unit WorkerManager::getClosestMineralWorkerTo(BWAPI::Unit enemyUnit)
+void WorkerManager::finishedWithRepairWorker(BWAPI::Unit unit)
 {
-    UAB_ASSERT(enemyUnit != nullptr, "enemyUnit was null");
+	UAB_ASSERT(unit != nullptr, "Worker was null");
+
+	if (workerData.getWorkerJob(unit) == WorkerData::Repair)
+	{
+		setMineralWorker(unit);
+	}
+}
+
+// set repair workers in scvSquad to combat workers once repair is done
+// since they are originally combat units
+void WorkerManager::finishedWithRepairCombatWorker(BWAPI::Unit unit)
+{
+	UAB_ASSERT(unit != nullptr, "Worker was null");
+
+	if (workerData.getWorkerJob(unit) == WorkerData::Repair)
+	{
+		setCombatWorker(unit);
+	}
+}
+
+
+BWAPI::Unit WorkerManager::getClosestMineralWorkerTo(BWAPI::Unit targetUnit)
+{
+    UAB_ASSERT(targetUnit != nullptr, "targetUnit was null");
 
     BWAPI::Unit closestMineralWorker = nullptr;
     double closestDist = 100000;
@@ -237,7 +348,7 @@ BWAPI::Unit WorkerManager::getClosestMineralWorkerTo(BWAPI::Unit enemyUnit)
 		// if it is a move worker
         if (workerData.getWorkerJob(worker) == WorkerData::Minerals) 
 		{
-			double dist = worker->getDistance(enemyUnit);
+			double dist = worker->getDistance(targetUnit);
 
             if (!closestMineralWorker || dist < closestDist)
             {
@@ -250,6 +361,48 @@ BWAPI::Unit WorkerManager::getClosestMineralWorkerTo(BWAPI::Unit enemyUnit)
     previousClosestWorker = closestMineralWorker;
     return closestMineralWorker;
 }
+
+// get Closest Combat Worker To the target Unit
+BWAPI::Unit WorkerManager::getClosestCombatWorkerTo(BWAPI::Unit targetUnit)
+{
+	UAB_ASSERT(targetUnit != nullptr, "targetUnit was null");
+
+	BWAPI::Unit closestCombatWorker = nullptr;
+	double closestDist = 100000;
+
+	if (previousClosestWorker)
+	{
+		if (previousClosestWorker->getHitPoints() > 0)
+		{
+			return previousClosestWorker;
+		}
+	}
+
+	// for each of our workers
+	for (auto & worker : workerData.getWorkers())
+	{
+		UAB_ASSERT(worker != nullptr, "Worker was null");
+		if (!worker)
+		{
+			continue;
+		}
+		// if it is a move worker
+		if (workerData.getWorkerJob(worker) == WorkerData::Combat) 
+		{
+			double dist = worker->getDistance(targetUnit);
+
+			if (!closestCombatWorker || dist < closestDist)
+			{
+				closestCombatWorker = worker;
+				dist = closestDist;
+			}
+		}
+	}
+
+	previousClosestWorker = closestCombatWorker;
+	return closestCombatWorker;
+}
+
 
 BWAPI::Unit WorkerManager::getWorkerScout()
 {
@@ -708,6 +861,14 @@ bool WorkerManager::isBuilder(BWAPI::Unit worker)
 	return (workerData.getWorkerJob(worker) == WorkerData::Build);
 }
 
+bool WorkerManager::isWorkerCombat(BWAPI::Unit worker)
+{
+	UAB_ASSERT(worker != nullptr, "Worker was null");
+
+	return (workerData.getWorkerJob(worker) == WorkerData::Combat);
+}
+
+
 int WorkerManager::getNumMineralWorkers() 
 {
 	return workerData.getNumMineralWorkers();	
@@ -721,4 +882,39 @@ int WorkerManager::getNumIdleWorkers()
 int WorkerManager::getNumGasWorkers() 
 {
 	return workerData.getNumGasWorkers();
+}
+
+int WorkerManager::getNumWorkers()
+{
+	return workerData.getNumWorkers();
+}
+
+int WorkerManager::getNumBuildWorkers()
+{
+	return workerData.getNumBuildWorkers();
+}
+
+int WorkerManager::getNumCombatWorkers()
+{
+	return workerData.getNumCombatWorkers();
+}
+
+int WorkerManager::getNumRepairWorkers()
+{
+	return workerData.getNumRepairWorkers();
+}
+
+int WorkerManager::getNumMoveWorkers()
+{
+	return workerData.getNumMoveWorkers();
+}
+
+int WorkerManager::getNumScoutWorkers()
+{
+	return workerData.getNumScoutWorkers();
+}
+
+int WorkerManager::getNumDefaultWorkers()
+{
+	return workerData.getNumDefaultWorkers();
 }

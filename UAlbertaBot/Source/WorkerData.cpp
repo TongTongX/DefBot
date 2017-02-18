@@ -216,6 +216,7 @@ void WorkerData::clearPreviousJob(BWAPI::Unit unit)
 	workerJobMap.erase(unit);
 }
 
+// implemetations of all possible cases for number of worker, for further uses
 int WorkerData::getNumWorkers() const
 {
 	return workers.size();
@@ -260,6 +261,84 @@ int WorkerData::getNumIdleWorkers() const
 	return num;
 }
 
+int WorkerData::getNumBuildWorkers() const
+{
+	size_t num = 0;
+	for (auto & unit : workers)
+	{
+		if (workerJobMap.at(unit) == WorkerData::Build)
+		{
+			num++;
+		}
+	}
+	return num;
+}
+
+int WorkerData::getNumCombatWorkers() const
+{
+	size_t num = 0;
+	for (auto & unit : workers)
+	{
+		if (workerJobMap.at(unit) == WorkerData::Combat)
+		{
+			num++;
+		}
+	}
+	return num;
+}
+
+int WorkerData::getNumRepairWorkers() const
+{
+	size_t num = 0;
+	for (auto & unit : workers)
+	{
+		if (workerJobMap.at(unit) == WorkerData::Repair)
+		{
+			num++;
+		}
+	}
+	return num;
+}
+
+int WorkerData::getNumMoveWorkers() const
+{
+	size_t num = 0;
+	for (auto & unit : workers)
+	{
+		if (workerJobMap.at(unit) == WorkerData::Move)
+		{
+			num++;
+		}
+	}
+	return num;
+}
+
+int WorkerData::getNumScoutWorkers() const
+{
+	size_t num = 0;
+	for (auto & unit : workers)
+	{
+		if (workerJobMap.at(unit) == WorkerData::Scout)
+		{
+			num++;
+		}
+	}
+	return num;
+}
+
+int WorkerData::getNumDefaultWorkers() const
+{
+	size_t num = 0;
+	for (auto & unit : workers)
+	{
+		if (workerJobMap.at(unit) == WorkerData::Default)
+		{
+			num++;
+		}
+	}
+	return num;
+}
+// ===========================number of workers==============================
 
 enum WorkerData::WorkerJob WorkerData::getWorkerJob(BWAPI::Unit unit)
 {
